@@ -3,6 +3,7 @@ import { useAnalyticsState } from "./hooks/useAnalyticsState";
 import { useAnalyticsStore } from "./store/analyticsStore";
 import { useProjectStore } from "../projects/store/projectStore";
 import socket from "../../services/socket";
+import { useNavigate } from "react-router-dom"; // ✅ ADDED
 
 /* COMPONENTS */
 import TopBar from "./components/TopBar";
@@ -35,6 +36,7 @@ const AnalyticsPage = () => {
   const state = useAnalyticsState();
   const { selectedProject } = useProjectStore();
   const store = useAnalyticsStore();
+  const navigate = useNavigate(); // ✅ ADDED
 
   const data = selectedProject ? store?.data : EMPTY;
   const loadAnalytics = store?.loadAnalytics;
@@ -103,7 +105,7 @@ const AnalyticsPage = () => {
           />
         </header>
 
-        {/* 🔥 IMPROVED EMPTY STATE */}
+        {/* 🔥 FIXED EMPTY STATE */}
         {!selectedProject && (
           <div className="mb-6 p-5 rounded-xl border border-indigo-500/20 bg-indigo-500/5 flex items-center justify-between">
             <div>
@@ -116,7 +118,7 @@ const AnalyticsPage = () => {
             </div>
 
             <button
-              onClick={() => (window.location.href = "/projects")}
+              onClick={() => navigate("/projects")} // ✅ FIXED
               className="px-4 py-2 text-sm rounded-lg bg-indigo-500 text-white hover:bg-indigo-400 transition"
             >
               Go to Projects
