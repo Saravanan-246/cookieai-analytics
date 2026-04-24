@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Menu, User, LogOut } from "lucide-react";
@@ -10,7 +10,7 @@ const NavLink = ({ to, children, onClick }) => {
 
   return (
     <Link to={to} onClick={onClick} className="relative text-sm font-medium">
-      <span className={active ? "text-white" : "text-zinc-400 hover:text-white"}>
+      <span className={active ? "text-white" : "text-zinc-400 hover:text-white transition"}>
         {children}
       </span>
 
@@ -31,8 +31,9 @@ const Navbar = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
+  const menuRef = useRef(); // ✅ for outside click
 
-  /* 🔥 SYNC USER (FAST FIX) */
+  /* USER SYNC */
   useEffect(() => {
     const syncUser = () => {
       const stored = localStorage.getItem("user");
@@ -40,7 +41,6 @@ const Navbar = () => {
     };
 
     syncUser();
-
     window.addEventListener("storage", syncUser);
     window.addEventListener("focus", syncUser);
 
@@ -50,13 +50,25 @@ const Navbar = () => {
     };
   }, [location]);
 
-  /* 🔥 LOGOUT FIX */
+  /* CLOSE MOBILE ON OUTSIDE CLICK */
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
+
   const handleLogout = () => {
     localStorage.clear();
-
     setUser(null);
     setDropdown(false);
-
     navigate("/login");
   };
 
@@ -76,7 +88,7 @@ const Navbar = () => {
             </span>
           </Link>
 
-          {/* NAV */}
+          {/* DESKTOP NAV */}
           <nav className="hidden md:flex gap-8">
             <NavLink to="/">Home</NavLink>
             <NavLink to="/projects">Projects</NavLink>
@@ -85,10 +97,9 @@ const Navbar = () => {
 
           {/* RIGHT */}
           <div className="hidden md:flex items-center gap-4">
-
             {!user ? (
               <>
-                <Link to="/login" className="text-sm text-zinc-400 hover:text-white">
+                <Link to="/login" className="text-sm text-zinc-400 hover:text-white transition">
                   Login
                 </Link>
 
@@ -96,19 +107,17 @@ const Navbar = () => {
                   to="/signup"
                   className="px-4 py-1.5 text-sm rounded-lg
                   bg-gradient-to-r from-violet-500 to-indigo-500
-                  text-white hover:opacity-90"
+                  text-white hover:opacity-90 transition"
                 >
                   Sign up
                 </Link>
               </>
             ) : (
               <div className="relative">
-
-                {/* PROFILE BTN */}
                 <button
                   onClick={() => setDropdown(!dropdown)}
                   className="flex items-center gap-2 px-3 py-1.5 rounded-lg
-                  bg-white/[0.05] border border-white/10 hover:bg-white/[0.08]"
+                  bg-white/[0.05] border border-white/10 hover:bg-white/[0.08] transition"
                 >
                   <div className="w-7 h-7 rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 flex items-center justify-center text-xs font-semibold">
                     {user.email?.charAt(0).toUpperCase()}
@@ -119,7 +128,6 @@ const Navbar = () => {
                   </span>
                 </button>
 
-                {/* DROPDOWN */}
                 <AnimatePresence>
                   {dropdown && (
                     <motion.div
@@ -130,30 +138,23 @@ const Navbar = () => {
                       bg-[#0b0715] border border-white/10 rounded-xl shadow-xl p-2"
                     >
                       <button
-                        onClick={() => {
-                          navigate("/profile");
-                          setDropdown(false);
-                        }}
+                        onClick={() => { navigate("/profile"); setDropdown(false); }}
                         className="flex items-center gap-2 w-full px-3 py-2 text-sm text-zinc-300 hover:bg-white/10 rounded-lg"
                       >
-                        <User size={16} />
-                        Profile
+                        <User size={16} /> Profile
                       </button>
 
                       <button
                         onClick={handleLogout}
                         className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-400 hover:bg-white/10 rounded-lg"
                       >
-                        <LogOut size={16} />
-                        Logout
+                        <LogOut size={16} /> Logout
                       </button>
                     </motion.div>
                   )}
                 </AnimatePresence>
-
               </div>
             )}
-
           </div>
 
           {/* MOBILE BTN */}
@@ -173,13 +174,14 @@ const Navbar = () => {
             className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50"
           >
             <motion.div
-              initial={{ y: 80 }}
+              ref={menuRef}
+              initial={{ y: 100 }}
               animate={{ y: 0 }}
-              exit={{ y: 60 }}
+              exit={{ y: 80 }}
               className="absolute bottom-0 w-full p-6
               bg-[#05030a] border-t border-white/10 rounded-t-2xl"
             >
-              <div className="flex flex-col gap-6 text-lg">
+              <div className="flex flex-col gap-5 text-base">
                 <NavLink to="/" onClick={() => setOpen(false)}>Home</NavLink>
                 <NavLink to="/projects" onClick={() => setOpen(false)}>Projects</NavLink>
                 <NavLink to="/analytics" onClick={() => setOpen(false)}>Analytics</NavLink>
@@ -188,25 +190,33 @@ const Navbar = () => {
               <div className="mt-8 flex flex-col gap-3">
                 {!user ? (
                   <>
-                    <button onClick={() => { setOpen(false); navigate("/login"); }}
-                      className="py-2 border border-white/10 rounded-lg">
+                    <button
+                      onClick={() => { setOpen(false); navigate("/login"); }}
+                      className="py-2 border border-white/10 rounded-lg text-zinc-300"
+                    >
                       Login
                     </button>
 
-                    <button onClick={() => { setOpen(false); navigate("/signup"); }}
-                      className="py-2 bg-violet-500 rounded-lg text-white">
+                    <button
+                      onClick={() => { setOpen(false); navigate("/signup"); }}
+                      className="py-2 bg-gradient-to-r from-violet-500 to-indigo-500 rounded-lg text-white"
+                    >
                       Sign up
                     </button>
                   </>
                 ) : (
                   <>
-                    <button onClick={() => { setOpen(false); navigate("/profile"); }}
-                      className="py-2 bg-white/[0.05] rounded-lg">
+                    <button
+                      onClick={() => { setOpen(false); navigate("/profile"); }}
+                      className="py-2 bg-white/[0.05] rounded-lg text-zinc-300"
+                    >
                       Profile
                     </button>
 
-                    <button onClick={() => { setOpen(false); handleLogout(); }}
-                      className="py-2 border border-white/10 text-red-400 rounded-lg">
+                    <button
+                      onClick={() => { setOpen(false); handleLogout(); }}
+                      className="py-2 border border-white/10 text-red-400 rounded-lg"
+                    >
                       Logout
                     </button>
                   </>
