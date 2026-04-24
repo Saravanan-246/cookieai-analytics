@@ -1,0 +1,136 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =========================
+   RESET
+========================= */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 🔥 Prevent layout shift issues */
+img,
+video {
+  max-width: 100%;
+  display: block;
+}
+
+/* =========================
+   GLOBAL
+========================= */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  @apply bg-[#05030a] text-gray-200;
+}
+
+/* =========================
+   TYPOGRAPHY
+========================= */
+
+h1, h2, h3, h4 {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  @apply text-white;
+}
+
+p {
+  line-height: 1.6;
+  margin: 0;
+  @apply text-gray-300;
+}
+
+a {
+  text-decoration: none;
+  @apply text-gray-300 hover:text-white transition-colors duration-200;
+}
+
+/* =========================
+   SELECTION
+========================= */
+
+::selection {
+  @apply bg-violet-500/30 text-white;
+}
+
+/* =========================
+   SCROLLBAR (IMPROVED)
+========================= */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #27272a; /* better contrast */
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+/* =========================
+   FOCUS (ACCESSIBILITY)
+========================= */
+
+:focus-visible {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+/* =========================
+   UTILITIES
+========================= */
+
+.glass {
+  @apply bg-white/[0.04] backdrop-blur-xl border border-white/10;
+}
+
+.soft-shadow {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* =========================
+   🔥 NEW (IMPORTANT FIXES)
+========================= */
+
+/* Prevent horizontal scroll bugs */
+body, html {
+  overflow-x: hidden;
+}
+
+/* Fix button default styles */
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Input consistency */
+input, textarea {
+  outline: none;
+  background: transparent;
+}
+
+/* Smooth transitions globally */
+* {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
