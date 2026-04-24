@@ -9,17 +9,16 @@ const NavLink = ({ to, children, onClick }) => {
   const active = pathname === to;
 
   return (
-    <Link to={to} onClick={onClick} className="relative text-sm font-medium">
-      <span className={active ? "text-white" : "text-zinc-400 hover:text-white transition"}>
-        {children}
-      </span>
-
-      {active && (
-        <motion.span
-          layoutId="nav-underline"
-          className="absolute left-0 -bottom-1 w-full h-[2px] bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full"
-        />
-      )}
+    <Link
+      to={to}
+      onClick={onClick}
+      className={`text-sm font-medium transition px-2 py-1 rounded-md
+      ${active
+        ? "text-white bg-white/10"
+        : "text-zinc-400 hover:text-white hover:bg-white/5"
+      }`}
+    >
+      {children}
     </Link>
   );
 };
@@ -31,7 +30,7 @@ const Navbar = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const menuRef = useRef(); // ✅ for outside click
+  const menuRef = useRef();
 
   /* USER SYNC */
   useEffect(() => {
@@ -58,10 +57,7 @@ const Navbar = () => {
       }
     };
 
-    if (open) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
+    if (open) document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
@@ -77,26 +73,24 @@ const Navbar = () => {
       {/* NAVBAR */}
       <header className="fixed top-0 w-full z-50 px-4 py-3">
         <div className="max-w-6xl mx-auto flex items-center justify-between
-          bg-gradient-to-r from-[#0b0715]/80 to-[#090514]/80 backdrop-blur-xl
-          border border-white/10 rounded-xl px-5 h-14 shadow-lg">
+          bg-black/60 backdrop-blur-xl border border-white/10
+          rounded-xl px-5 h-14 shadow-lg">
 
           {/* LOGO */}
-          <Link to="/" className="text-sm font-semibold">
+          <Link to="/" className="text-sm font-semibold tracking-wide">
             <span className="text-white">Cookie</span>
-            <span className="ml-1 bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
-              AI
-            </span>
+            <span className="ml-1 text-indigo-400">AI</span>
           </Link>
 
           {/* DESKTOP NAV */}
-          <nav className="hidden md:flex gap-8">
+          <nav className="hidden md:flex gap-2">
             <NavLink to="/">Home</NavLink>
             <NavLink to="/projects">Projects</NavLink>
             <NavLink to="/analytics">Analytics</NavLink>
           </nav>
 
           {/* RIGHT */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-3">
             {!user ? (
               <>
                 <Link to="/login" className="text-sm text-zinc-400 hover:text-white transition">
@@ -106,8 +100,7 @@ const Navbar = () => {
                 <Link
                   to="/signup"
                   className="px-4 py-1.5 text-sm rounded-lg
-                  bg-gradient-to-r from-violet-500 to-indigo-500
-                  text-white hover:opacity-90 transition"
+                  bg-indigo-500 text-white hover:bg-indigo-400 transition"
                 >
                   Sign up
                 </Link>
@@ -119,7 +112,7 @@ const Navbar = () => {
                   className="flex items-center gap-2 px-3 py-1.5 rounded-lg
                   bg-white/[0.05] border border-white/10 hover:bg-white/[0.08] transition"
                 >
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 flex items-center justify-center text-xs font-semibold">
+                  <div className="w-7 h-7 rounded-full bg-indigo-500 flex items-center justify-center text-xs font-semibold">
                     {user.email?.charAt(0).toUpperCase()}
                   </div>
 
@@ -135,7 +128,7 @@ const Navbar = () => {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
                       className="absolute right-0 mt-3 w-44
-                      bg-[#0b0715] border border-white/10 rounded-xl shadow-xl p-2"
+                      bg-black border border-white/10 rounded-xl shadow-xl p-2"
                     >
                       <button
                         onClick={() => { navigate("/profile"); setDropdown(false); }}
@@ -179,9 +172,9 @@ const Navbar = () => {
               animate={{ y: 0 }}
               exit={{ y: 80 }}
               className="absolute bottom-0 w-full p-6
-              bg-[#05030a] border-t border-white/10 rounded-t-2xl"
+              bg-black border-t border-white/10 rounded-t-2xl"
             >
-              <div className="flex flex-col gap-5 text-base">
+              <div className="flex flex-col gap-4 text-base">
                 <NavLink to="/" onClick={() => setOpen(false)}>Home</NavLink>
                 <NavLink to="/projects" onClick={() => setOpen(false)}>Projects</NavLink>
                 <NavLink to="/analytics" onClick={() => setOpen(false)}>Analytics</NavLink>
@@ -199,7 +192,7 @@ const Navbar = () => {
 
                     <button
                       onClick={() => { setOpen(false); navigate("/signup"); }}
-                      className="py-2 bg-gradient-to-r from-violet-500 to-indigo-500 rounded-lg text-white"
+                      className="py-2 bg-indigo-500 rounded-lg text-white"
                     >
                       Sign up
                     </button>
