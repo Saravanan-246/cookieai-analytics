@@ -1,223 +1,140 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Menu, User, LogOut } from "lucide-react";
-
-/* NAV LINK */
-const NavLink = ({ to, children, onClick }) => {
-  const { pathname } = useLocation();
-  const active = pathname === to;
-
-  return (
-    <Link
-      to={to}
-      onClick={onClick}
-      className={`text-sm font-medium transition px-2 py-1 rounded-md
-      ${active
-        ? "text-white bg-white/10"
-        : "text-zinc-400 hover:text-white hover:bg-white/5"
-      }`}
-    >
-      {children}
-    </Link>
-  );
-};
+import { Menu, X } from "lucide-react";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
-  const [dropdown, setDropdown] = useState(false);
-  const [user, setUser] = useState(null);
-
   const navigate = useNavigate();
   const location = useLocation();
-  const menuRef = useRef();
 
-  /* USER SYNC */
+  const navLinks = [
+    { name: "Home", path: "/" },
+    { name: "Demo", path: "/demo" },
+    { name: "Features", path: "/features" },
+  ];
+
+  // Close on route change
   useEffect(() => {
-    const syncUser = () => {
-      const stored = localStorage.getItem("user");
-      setUser(stored ? JSON.parse(stored) : null);
-    };
-
-    syncUser();
-    window.addEventListener("storage", syncUser);
-    window.addEventListener("focus", syncUser);
-
-    return () => {
-      window.removeEventListener("storage", syncUser);
-      window.removeEventListener("focus", syncUser);
-    };
+    setOpen(false);
   }, [location]);
 
-  /* CLOSE MOBILE ON OUTSIDE CLICK */
+  // Close when screen becomes desktop
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setOpen(false);
-      }
+    const handleResize = () => {
+      if (window.innerWidth >= 768) setOpen(false);
     };
-
-    if (open) document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [open]);
-
-  const handleLogout = () => {
-    localStorage.clear();
-    setUser(null);
-    setDropdown(false);
-    navigate("/login");
-  };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <>
-      {/* NAVBAR */}
-      <header className="fixed top-0 w-full z-50 px-4 py-3">
+      {/* ===== NAVBAR ===== */}
+      <header className="fixed top-0 left-0 w-full z-50 px-4 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between
-          bg-black/60 backdrop-blur-xl border border-white/10
-          rounded-xl px-5 h-14 shadow-lg">
+          bg-white/70 backdrop-blur-md border border-white/40
+          rounded-2xl px-6 h-16 shadow-[0_8px_32px_rgba(0,0,0,0.05)]">
 
           {/* LOGO */}
-          <Link to="/" className="text-sm font-semibold tracking-wide">
-            <span className="text-white">Cookie</span>
-            <span className="ml-1 text-indigo-400">AI</span>
+          <Link to="/" className="text-lg font-bold tracking-tight text-gray-900">
+            Cookie <span className="text-violet-600">AI</span>
           </Link>
 
           {/* DESKTOP NAV */}
-          <nav className="hidden md:flex gap-2">
-            <NavLink to="/">Home</NavLink>
-            <NavLink to="/projects">Projects</NavLink>
-            <NavLink to="/analytics">Analytics</NavLink>
+          <nav className="hidden md:flex gap-10">
+            {navLinks.map((link) => (
+              <Link 
+                key={link.path} 
+                to={link.path} 
+                className="text-sm font-medium text-gray-600 hover:text-violet-600 transition-colors"
+              >
+                {link.name}
+              </Link>
+            ))}
           </nav>
 
-          {/* RIGHT */}
-          <div className="hidden md:flex items-center gap-3">
-            {!user ? (
-              <>
-                <Link to="/login" className="text-sm text-zinc-400 hover:text-white transition">
-                  Login
-                </Link>
+          {/* RIGHT SECTION */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate("/signup")}
+              className="hidden md:block px-5 py-2.5 rounded-xl 
+              bg-violet-600 text-white text-sm font-semibold shadow-lg 
+              shadow-violet-200 hover:bg-violet-700 transition-all active:scale-95"
+            >
+              Get Started
+            </button>
 
-                <Link
-                  to="/signup"
-                  className="px-4 py-1.5 text-sm rounded-lg
-                  bg-indigo-500 text-white hover:bg-indigo-400 transition"
-                >
-                  Sign up
-                </Link>
-              </>
-            ) : (
-              <div className="relative">
-                <button
-                  onClick={() => setDropdown(!dropdown)}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg
-                  bg-white/[0.05] border border-white/10 hover:bg-white/[0.08] transition"
-                >
-                  <div className="w-7 h-7 rounded-full bg-indigo-500 flex items-center justify-center text-xs font-semibold">
-                    {user.email?.charAt(0).toUpperCase()}
-                  </div>
-
-                  <span className="text-sm text-zinc-300 max-w-[100px] truncate">
-                    {user.email}
-                  </span>
-                </button>
-
-                <AnimatePresence>
-                  {dropdown && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="absolute right-0 mt-3 w-44
-                      bg-black border border-white/10 rounded-xl shadow-xl p-2"
-                    >
-                      <button
-                        onClick={() => { navigate("/profile"); setDropdown(false); }}
-                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-zinc-300 hover:bg-white/10 rounded-lg"
-                      >
-                        <User size={16} /> Profile
-                      </button>
-
-                      <button
-                        onClick={handleLogout}
-                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-400 hover:bg-white/10 rounded-lg"
-                      >
-                        <LogOut size={16} /> Logout
-                      </button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            )}
+            {/* MOBILE MENU TOGGLE */}
+            <button
+              onClick={() => setOpen(!open)}
+              className="md:hidden p-2 rounded-xl hover:bg-gray-100 transition-colors text-gray-700"
+            >
+              {open ? <X size={24} /> : <Menu size={24} />}
+            </button>
           </div>
-
-          {/* MOBILE BTN */}
-          <button onClick={() => setOpen(true)} className="md:hidden text-white">
-            <Menu size={22} />
-          </button>
         </div>
       </header>
 
-      {/* MOBILE MENU */}
+      {/* ===== MOBILE MENU ===== */}
       <AnimatePresence>
         {open && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50"
-          >
+          <>
+            {/* BACKDROP */}
             <motion.div
-              ref={menuRef}
-              initial={{ y: 100 }}
-              animate={{ y: 0 }}
-              exit={{ y: 80 }}
-              className="absolute bottom-0 w-full p-6
-              bg-black border-t border-white/10 rounded-t-2xl"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setOpen(false)}
+              className="fixed inset-0 z-40 bg-black/10 backdrop-blur-sm md:hidden"
+            />
+
+            {/* PANEL */}
+            <motion.div
+              initial={{ opacity: 0, y: -10, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.98 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="fixed top-24 left-4 right-4 z-50 md:hidden
+              p-6 rounded-3xl bg-white border border-gray-100
+              shadow-[0_20px_50px_rgba(0,0,0,0.1)]"
             >
-              <div className="flex flex-col gap-4 text-base">
-                <NavLink to="/" onClick={() => setOpen(false)}>Home</NavLink>
-                <NavLink to="/projects" onClick={() => setOpen(false)}>Projects</NavLink>
-                <NavLink to="/analytics" onClick={() => setOpen(false)}>Analytics</NavLink>
+              <div className="flex flex-col gap-6">
+                {/* NAV LINKS */}
+                <div className="flex flex-col gap-5">
+                  {navLinks.map((item) => (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      className="text-xl font-semibold text-gray-800 hover:text-violet-600 transition-colors"
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+
+                <div className="h-[1px] w-full bg-gray-100" />
+
+                {/* ACTION BUTTONS */}
+                <div className="flex flex-col gap-3">
+                  <Link
+                    to="/login"
+                    className="w-full py-4 rounded-2xl text-center font-bold text-gray-700 bg-gray-50 hover:bg-gray-100 transition-colors"
+                  >
+                    Login
+                  </Link>
+
+                  <Link
+                    to="/signup"
+                    className="w-full py-4 rounded-2xl text-center font-bold text-white
+                    bg-violet-600 shadow-lg shadow-violet-200 active:scale-[0.98] transition-all"
+                  >
+                    Get Started
+                  </Link>
+                </div>
               </div>
-
-              <div className="mt-8 flex flex-col gap-3">
-                {!user ? (
-                  <>
-                    <button
-                      onClick={() => { setOpen(false); navigate("/login"); }}
-                      className="py-2 border border-white/10 rounded-lg text-zinc-300"
-                    >
-                      Login
-                    </button>
-
-                    <button
-                      onClick={() => { setOpen(false); navigate("/signup"); }}
-                      className="py-2 bg-indigo-500 rounded-lg text-white"
-                    >
-                      Sign up
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      onClick={() => { setOpen(false); navigate("/profile"); }}
-                      className="py-2 bg-white/[0.05] rounded-lg text-zinc-300"
-                    >
-                      Profile
-                    </button>
-
-                    <button
-                      onClick={() => { setOpen(false); handleLogout(); }}
-                      className="py-2 border border-white/10 text-red-400 rounded-lg"
-                    >
-                      Logout
-                    </button>
-                  </>
-                )}
-              </div>
-
             </motion.div>
-          </motion.div>
+          </>
         )}
       </AnimatePresence>
     </>

@@ -1,172 +1,279 @@
-import React, { useMemo, useEffect } from "react";
-import {
-  motion,
-  useSpring,
-  useTransform,
-  useMotionValue,
-} from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { BarChart3, ShieldCheck, Zap, Sparkles } from "lucide-react";
+/* ================= CONFIG ================= */
 
-const Hero = () => {
-  const navigate = useNavigate();
+const ease = [0.16, 1, 0.3, 1];
 
-  const ease = [0.16, 1, 0.3, 1];
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 }, // reduced from 60 → smoother
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6, // faster
+      ease
+    }
+  }
+};
 
-  /* MOUSE PARALLAX */
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
+const stagger = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.08 // tighter flow
+    }
+  }
+};
+/* ================= MAIN ================= */
 
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      const { clientX, clientY } = e;
-      mouseX.set(clientX / window.innerWidth - 0.5);
-      mouseY.set(clientY / window.innerHeight - 0.5);
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
-
-  const spring = { damping: 35, stiffness: 70 };
-
-  const bgX = useSpring(useTransform(mouseX, [-0.5, 0.5], [40, -40]), spring);
-  const bgY = useSpring(useTransform(mouseY, [-0.5, 0.5], [40, -40]), spring);
-  const contentX = useSpring(
-    useTransform(mouseX, [-0.5, 0.5], [8, -8]),
-    spring
-  );
-
-  /* STARS */
-  const stars = useMemo(
-    () =>
-      Array.from({ length: 50 }).map(() => ({
-        top: `${Math.random() * 100}%`,
-        left: `${Math.random() * 100}%`,
-        duration: Math.random() * 3 + 2,
-        delay: Math.random() * 4,
-        size: Math.random() * 1.5 + 0.5,
-      })),
-    []
-  );
-
-  /* FEATURES */
-  const features = [
-    {
-      title: "Cookie Consent",
-      desc: "Collect and manage user consent with GDPR-compliant flows.",
-    },
-    {
-      title: "Real-time Analytics",
-      desc: "Track visitors, sessions, and engagement instantly.",
-    },
-    {
-      title: "Lightweight Script",
-      desc: "Ultra-fast tracking with minimal performance impact.",
-    },
-  ];
-
-  /* ACTIONS */
-  const handleStart = () => {
-    navigate("/projects");
-  };
-
-  const handleDemo = () => {
-    navigate("/demo");
-  };
-
+export default function LandingPage() {
   return (
-    <section className="relative flex items-center justify-center min-h-screen px-6 py-20 overflow-hidden bg-[#02010a] text-white">
+    <div className="bg-white text-[#202124] font-sans overflow-x-hidden">
 
-      {/* BACKGROUND */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,#2e1065_0%,#02010a_60%)] opacity-80" />
+      
+     
 
-      {/* STARS */}
-      <motion.div style={{ x: bgX, y: bgY }} className="absolute inset-[-10%]">
-        {stars.map((s, i) => (
-          <motion.div
-            key={i}
-            animate={{ opacity: [0.1, 0.7, 0.1] }}
-            transition={{
-              duration: s.duration,
-              repeat: Infinity,
-              delay: s.delay,
-            }}
-            className="absolute bg-violet-400 rounded-full"
-            style={{
-              top: s.top,
-              left: s.left,
-              width: s.size,
-              height: s.size,
-            }}
-          />
-        ))}
-      </motion.div>
+      {/* ===== MAIN ===== */}
+      <main className="pt-6">
 
-      {/* CONTENT */}
-      <motion.div
-        style={{ x: contentX }}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease }}
-        className="relative z-10 text-center max-w-5xl"
-      >
-        {/* BADGE */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 mb-10 rounded-full border border-white/10 bg-white/5">
-          <span className="h-2 w-2 bg-violet-500 rounded-full animate-pulse" />
-          <span className="text-xs tracking-widest text-violet-200">
-            COOKIE MANAGEMENT PLATFORM
-          </span>
-        </div>
+        {/* HERO */}
+        <Hero />
 
-        {/* TITLE */}
-        <h1 className="text-5xl md:text-7xl font-bold leading-tight mb-6">
-          Smart Cookie <br />
-          <span className="bg-gradient-to-r from-violet-200 to-violet-500 text-transparent bg-clip-text">
-            Management & Analytics
-          </span>
-        </h1>
-
-        {/* SUBTITLE */}
-        <p className="text-zinc-400 max-w-xl mx-auto mb-10">
-          Control cookies, track users, and stay compliant — all in one
-          lightweight platform built for modern web apps.
-        </p>
-
-        {/* BUTTONS */}
-        <div className="flex justify-center gap-4 flex-wrap mb-20">
-          <button
-            onClick={handleStart}
-            className="px-8 py-3 bg-white text-black rounded-full text-sm font-semibold hover:bg-violet-100 transition active:scale-95"
-          >
-            Go to Projects
-          </button>
-
-          <button
-            onClick={handleDemo}
-            className="px-8 py-3 border border-white/20 rounded-full text-sm font-semibold hover:border-violet-400 hover:text-violet-300 transition"
-          >
-            View Demo
-          </button>
+        {/* PREVIEW */}
+        <div className="mt-16">
+          <PreviewSection />
         </div>
 
         {/* FEATURES */}
-        <div className="grid md:grid-cols-3 gap-6 text-left">
-          {features.map((f, i) => (
-            <div
-              key={i}
-              className="p-6 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] transition"
-            >
-              <h3 className="font-semibold mb-2">{f.title}</h3>
-              <p className="text-sm text-zinc-500">{f.desc}</p>
-            </div>
-          ))}
+        <div className="mt-24">
+          <FeaturesSection />
         </div>
+
+      </main>
+
+    </div>
+  );
+}
+/* ================= BACKGROUND ================= */
+
+
+const Background = () => (
+  <div className="fixed inset-0 -z-10 overflow-hidden">
+
+    {/* MAIN SOFT GLOW */}
+    <motion.div
+      initial={{ opacity: 0.6 }}
+      animate={{ opacity: [0.6, 0.8, 0.6] }}
+      transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+      className="absolute top-[-10%] left-[5%] w-[800px] h-[800px] bg-violet-200/50 blur-[120px] rounded-full"
+    />
+
+    {/* SECONDARY GLOW */}
+    <motion.div
+      initial={{ opacity: 0.5 }}
+      animate={{ opacity: [0.5, 0.7, 0.5] }}
+      transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+      className="absolute top-[30%] right-[-10%] w-[700px] h-[700px] bg-indigo-200/50 blur-[120px] rounded-full"
+    />
+
+    {/* CENTER LIGHT (SUBTLE) */}
+    <div className="absolute inset-0 bg-gradient-to-b from-white via-white/90 to-white" />
+
+  </div>
+);
+/* ================= HERO ================= */
+
+const Hero = () => {
+  const { scrollY } = useScroll();
+
+  // tighter movement (less empty feel)
+  const y = useTransform(scrollY, [0, 300], [0, 40]);
+  const opacity = useTransform(scrollY, [0, 250], [1, 0.9]);
+  const bgY = useTransform(scrollY, [0, 300], [0, 30]);
+
+  return (
+    <section className="relative min-h-[90vh] flex items-center justify-center text-center px-6 overflow-hidden">
+
+      {/* ===== BACKGROUND ===== */}
+      <motion.div style={{ y: bgY }} className="absolute inset-0 -z-10">
+        <div className="absolute top-[8%] left-[12%] w-[600px] h-[600px] bg-violet-100/50 blur-[110px] rounded-full" />
+        <div className="absolute bottom-[8%] right-[12%] w-[520px] h-[520px] bg-indigo-100/50 blur-[100px] rounded-full" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white via-white/95 to-white" />
       </motion.div>
 
-      {/* FADE */}
-      <div className="absolute bottom-0 w-full h-24 bg-gradient-to-t from-[#02010a]" />
+      {/* ===== CONTENT ===== */}
+      <motion.div
+        style={{ y, opacity }}
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+        className="max-w-3xl mx-auto"
+      >
+
+        {/* HEADLINE */}
+        <h1 className="text-[38px] md:text-[64px] font-bold leading-[1.08] tracking-tight">
+          Understand your product{" "}
+          <span className="bg-gradient-to-r from-violet-600 to-indigo-500 bg-clip-text text-transparent">
+            in real time
+          </span>
+        </h1>
+
+        {/* SUBTEXT */}
+        <p className="mt-4 text-base md:text-lg text-gray-600 leading-relaxed">
+          Gain instant clarity on user behavior, drop-offs, and performance.  
+          Privacy-first analytics built for modern teams.
+        </p>
+
+        {/* CTA */}
+        <motion.button
+  onClick={() => window.location.href = "http://localhost:5174/"}
+  whileHover={{ scale: 1.04 }}
+  whileTap={{ scale: 0.97 }}
+  className="mt-6 px-8 py-3 bg-violet-600 text-white rounded-lg font-medium 
+  hover:bg-violet-700 transition shadow-md hover:shadow-lg"
+>
+  Get Started
+</motion.button>
+
+      </motion.div>
     </section>
   );
 };
 
-export default Hero;
+/* ================= PREVIEW ================= */
+
+const PreviewSection = () => (
+  <section className="py-32 px-6 bg-[#FAFAFB]">
+
+    <motion.div
+      initial={{ opacity: 0, y: 80, scale: 0.97 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.9, ease }}
+      className="max-w-5xl mx-auto rounded-xl border border-gray-200 bg-white shadow-[0_40px_100px_rgba(0,0,0,0.06)] overflow-hidden"
+    >
+
+      {/* ===== HEADER ===== */}
+      <div className="px-6 py-4 border-b bg-white">
+        <span className="text-sm font-medium text-gray-700">
+          Analytics Overview
+        </span>
+      </div>
+
+      {/* ===== CONTENT ===== */}
+      <motion.div
+        variants={stagger}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+        className="grid md:grid-cols-3 gap-8 p-8"
+      >
+
+        <Stat
+          icon={<BarChart3 />}
+          title="Real-time tracking"
+          desc="Capture every interaction instantly."
+        />
+
+        <Stat
+          icon={<ShieldCheck />}
+          title="Privacy first"
+          desc="Built-in compliance and secure processing."
+        />
+
+        <Stat
+          icon={<Zap />}
+          title="Fast performance"
+          desc="Lightweight script with zero impact."
+        />
+
+      </motion.div>
+
+    </motion.div>
+  </section>
+);
+
+/* ================= FEATURES ================= */
+
+const FeaturesSection = () => (
+  <section className="py-32 px-6 bg-white">
+
+    {/* ===== HEADING ===== */}
+    <div className="max-w-3xl mx-auto text-center mb-16">
+      <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-[#202124]">
+        Built for clarity and performance
+      </h2>
+      <p className="mt-4 text-gray-500 text-lg">
+        Everything you need to understand your users and make better decisions.
+      </p>
+    </div>
+
+    {/* ===== FEATURES GRID ===== */}
+    <motion.div
+      variants={stagger}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true }}
+      className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8"
+    >
+
+      <FeatureCard
+        title="Quick integration"
+        desc="Start tracking in minutes with a lightweight script and zero setup complexity."
+      />
+
+      <FeatureCard
+        title="Reliable insights"
+        desc="Accurate event tracking without sampling or data loss."
+      />
+
+      <FeatureCard
+        title="Clean interface"
+        desc="A focused dashboard that highlights what truly matters."
+      />
+
+    </motion.div>
+
+  </section>
+);
+/* ================= COMPONENTS ================= */
+
+const Stat = ({ icon, title, desc }) => (
+  <motion.div
+    variants={fadeUp}
+    whileHover={{ y: -4 }}
+    className="p-6 rounded-xl border border-gray-100 bg-white transition hover:shadow-[0_12px_30px_rgba(0,0,0,0.06)]"
+  >
+
+    {/* ICON */}
+    <div className="mb-5 inline-flex items-center justify-center w-10 h-10 rounded-lg bg-violet-50 text-violet-600">
+      {icon}
+    </div>
+
+    {/* TITLE */}
+    <h3 className="text-base font-semibold text-[#202124] mb-2">
+      {title}
+    </h3>
+
+    {/* DESC */}
+    <p className="text-sm text-gray-500 leading-relaxed">
+      {desc}
+    </p>
+
+  </motion.div>
+);
+
+const FeatureCard = ({ title, desc }) => (
+  <motion.div
+    variants={fadeUp}
+    whileHover={{ y: -8 }}
+    className="p-6 rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition"
+  >
+    <h4 className="text-lg font-semibold text-[#202124] mb-2">
+      {title}
+    </h4>
+    <p className="text-gray-500 text-sm leading-relaxed">
+      {desc}
+    </p>
+  </motion.div>
+);

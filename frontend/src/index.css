@@ -9,12 +9,9 @@
 *,
 *::before,
 *::after {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
 }
 
-/* 🔥 Prevent layout shift issues */
 img,
 video {
   max-width: 100%;
@@ -22,7 +19,7 @@ video {
 }
 
 /* =========================
-   GLOBAL
+   GLOBAL (PREMIUM LIGHT)
 ========================= */
 
 html {
@@ -33,7 +30,14 @@ body {
   font-family: "Inter", system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  @apply bg-[#05030a] text-gray-200;
+
+  /* 🔥 SMOOTHER PREMIUM BACKGROUND */
+  background:
+    radial-gradient(circle at 15% 20%, rgba(99,102,241,0.06), transparent 45%),
+    radial-gradient(circle at 85% 60%, rgba(139,92,246,0.06), transparent 45%),
+    linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+
+  color: #0f172a;
 }
 
 /* =========================
@@ -43,19 +47,23 @@ body {
 h1, h2, h3, h4 {
   font-family: "Space Grotesk", system-ui, sans-serif;
   letter-spacing: -0.02em;
-  line-height: 1.15;
-  @apply text-white;
+  line-height: 1.08;
+  color: #020617;
 }
 
 p {
-  line-height: 1.6;
-  margin: 0;
-  @apply text-gray-300;
+  line-height: 1.65;
+  color: #475569;
 }
 
 a {
   text-decoration: none;
-  @apply text-gray-300 hover:text-white transition-colors duration-200;
+  color: #475569;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: #6366f1;
 }
 
 /* =========================
@@ -63,36 +71,31 @@ a {
 ========================= */
 
 ::selection {
-  @apply bg-violet-500/30 text-white;
+  background: rgba(99, 102, 241, 0.2);
+  color: #020617;
 }
 
 /* =========================
-   SCROLLBAR (IMPROVED)
+   SCROLLBAR (HIDDEN CLEAN)
 ========================= */
 
+/* Chrome / Safari */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 0px;
+  height: 0px;
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #27272a; /* better contrast */
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+/* Firefox */
+html {
+  scrollbar-width: none;
 }
 
 /* =========================
-   FOCUS (ACCESSIBILITY)
+   FOCUS
 ========================= */
 
 :focus-visible {
-  outline: 2px solid #8b5cf6;
+  outline: 2px solid #6366f1;
   outline-offset: 2px;
 }
 
@@ -100,37 +103,91 @@ a {
    UTILITIES
 ========================= */
 
+/* 🔥 GLASS */
 .glass {
-  @apply bg-white/[0.04] backdrop-blur-xl border border-white/10;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(99, 102, 241, 0.1);
 }
 
+/* 🔥 SOFT SHADOW */
 .soft-shadow {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.05),
+    0 2px 8px rgba(99, 102, 241, 0.08);
+}
+
+/* 🔥 HOVER LIFT */
+.hover-lift {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 16px 30px rgba(0,0,0,0.08),
+    0 6px 14px rgba(99,102,241,0.12);
+}
+
+/* 🔥 GRADIENT TEXT */
+.gradient-text {
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* =========================
-   🔥 NEW (IMPORTANT FIXES)
+   BUTTON SYSTEM
 ========================= */
 
-/* Prevent horizontal scroll bugs */
-body, html {
-  overflow-x: hidden;
+.btn-primary {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.25);
 }
 
-/* Fix button default styles */
-button {
-  background: none;
-  border: none;
-  cursor: pointer;
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(99, 102, 241, 0.3);
 }
 
-/* Input consistency */
+.btn-outline {
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  color: #4f46e5;
+  padding: 10px 18px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-outline:hover {
+  background: rgba(99, 102, 241, 0.06);
+}
+
+/* =========================
+   INPUTS
+========================= */
+
 input, textarea {
   outline: none;
   background: transparent;
 }
 
-/* Smooth transitions globally */
-* {
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+/* =========================
+   FIXES
+========================= */
+
+html, body {
+  overflow-x: hidden;
+}
+
+button {
+  border: none;
+  cursor: pointer;
+}
+.nav-link {
+  @apply text-sm text-gray-500 hover:text-black transition relative;
 }

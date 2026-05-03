@@ -1,122 +1,89 @@
-import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-
-/* 🔥 SMOOTH COUNT UP */
-const useCountUp = (end, duration = 1200) => {
-  const [value, setValue] = useState(0);
-
-  useEffect(() => {
-    let start = 0;
-    const increment = end / (duration / 16);
-
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= end) {
-        setValue(end);
-        clearInterval(timer);
-      } else {
-        setValue(Math.floor(start));
-      }
-    }, 16);
-
-    return () => clearInterval(timer);
-  }, [end, duration]);
-
-  return value;
-};
+import { Activity, ShieldCheck, Zap, Globe } from "lucide-react";
 
 const CTA = () => {
-  /* 🔥 COOKIE PLATFORM METRICS */
-  const consents = useCountUp(12482);
-  const optIn = useCountUp(87);
-  const blocked = useCountUp(5321);
-  const regions = useCountUp(24);
+  const items = [
+    {
+      title: "Real-time tracking",
+      desc: "Capture every user interaction instantly with zero delay.",
+      icon: <Activity className="w-5 h-5 text-indigo-600" />,
+      color: "bg-indigo-50",
+    },
+    {
+      title: "Privacy-first system",
+      desc: "Built with compliance and data protection at its core.",
+      icon: <ShieldCheck className="w-5 h-5 text-violet-600" />,
+      color: "bg-violet-50",
+    },
+    {
+      title: "Ultra-fast performance",
+      desc: "Lightweight script designed for speed and efficiency.",
+      icon: <Zap className="w-5 h-5 text-purple-600" />,
+      color: "bg-purple-50",
+    },
+    {
+      title: "Global-ready",
+      desc: "Works seamlessly across regions and modern applications.",
+      icon: <Globe className="w-5 h-5 text-blue-600" />,
+      color: "bg-blue-50",
+    },
+  ];
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center px-6 bg-[#05030a] text-white overflow-hidden">
-      
-      {/* BACKGROUND GLOW */}
-      <div className="absolute inset-0 flex justify-center pointer-events-none">
-        <div className="w-[800px] h-[400px] bg-violet-600/20 blur-[180px] rounded-full" />
+    <section className="relative py-28 px-6 bg-[#FAFAFB] overflow-hidden">
+
+      {/* ===== BACKGROUND ===== */}
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute top-[20%] left-[20%] w-[400px] h-[400px] bg-violet-100/40 blur-[120px] rounded-full" />
+        <div className="absolute bottom-[10%] right-[20%] w-[400px] h-[400px] bg-indigo-100/40 blur-[120px] rounded-full" />
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7 }}
-        className="relative z-10 w-full max-w-5xl"
-      >
-        <div className="rounded-2xl border border-violet-500/20 bg-white/[0.03] backdrop-blur-2xl p-10 md:p-14 text-center">
+      <div className="max-w-6xl mx-auto">
 
-          {/* BADGE */}
-          <div className="mb-6 inline-flex items-center gap-2 px-3 py-1 rounded-full border border-violet-400/20 bg-violet-500/10">
-            <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
-            <span className="text-[10px] tracking-[0.3em] uppercase text-violet-200">
-              GDPR Ready
-            </span>
-          </div>
-
-          {/* TITLE */}
-          <h2 className="text-3xl md:text-5xl font-semibold tracking-tight leading-tight mb-6">
-            Consent tracking that{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-200 to-violet-500 italic">
-              builds trust.
-            </span>
+        {/* ===== HEADER ===== */}
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-5xl font-semibold text-[#202124] mb-4">
+            Built to power modern analytics
           </h2>
-
-          {/* DESC */}
-          <p className="text-zinc-400 text-sm md:text-base mb-12 max-w-xl mx-auto">
-            Capture user consent, block unauthorized scripts, and stay compliant —
-            all in one powerful platform.
+          <p className="text-gray-500 max-w-xl mx-auto text-base">
+            A clean, scalable system designed to track, analyze, and deliver insights in real time.
           </p>
+        </div>
 
-          {/* 🔥 METRIC CARDS */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        {/* ===== GRID ===== */}
+        <div className="grid md:grid-cols-2 gap-6">
 
-            {/* CONSENTS */}
-            <div className="group p-5 rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.06] transition">
-              <p className="text-2xl md:text-3xl font-semibold text-violet-300">
-                {consents.toLocaleString()}
-              </p>
-              <p className="text-xs text-zinc-400 mt-1">
-                Consents Captured
-              </p>
-            </div>
+          {items.map((item, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.08, duration: 0.5 }}
+              viewport={{ once: true }}
+              className="group p-6 rounded-xl border border-gray-100 bg-white hover:shadow-md transition"
+            >
 
-            {/* OPT-IN */}
-            <div className="group p-5 rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.06] transition">
-              <p className="text-2xl md:text-3xl font-semibold text-green-300">
-                {optIn}%
-              </p>
-              <p className="text-xs text-zinc-400 mt-1">
-                Opt-in Rate
-              </p>
-            </div>
+              {/* ICON */}
+              <div className={`w-11 h-11 rounded-lg flex items-center justify-center mb-4 ${item.color}`}>
+                {item.icon}
+              </div>
 
-            {/* BLOCKED */}
-            <div className="group p-5 rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.06] transition">
-              <p className="text-2xl md:text-3xl font-semibold text-red-300">
-                {blocked.toLocaleString()}
-              </p>
-              <p className="text-xs text-zinc-400 mt-1">
-                Scripts Blocked
-              </p>
-            </div>
+              {/* TITLE */}
+              <h3 className="text-lg font-semibold text-[#202124] mb-2">
+                {item.title}
+              </h3>
 
-            {/* REGIONS */}
-            <div className="group p-5 rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.06] transition">
-              <p className="text-2xl md:text-3xl font-semibold text-blue-300">
-                {regions}
+              {/* DESC */}
+              <p className="text-sm text-gray-500 leading-relaxed">
+                {item.desc}
               </p>
-              <p className="text-xs text-zinc-400 mt-1">
-                Regions Covered
-              </p>
-            </div>
 
-          </div>
+            </motion.div>
+          ))}
 
         </div>
-      </motion.div>
+
+      </div>
     </section>
   );
 };
